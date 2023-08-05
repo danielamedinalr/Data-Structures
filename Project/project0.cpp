@@ -2,12 +2,17 @@
 
 using namespace std;
 
-int main()
+int configoption()
 {
+    //Componente 1: configuracion del juego
     int option;
     string command;
 
-    if (command == "init"){
+    if (command == "help"){
+        option = 0;
+    }
+    else if (command == "initialize")
+    {
         option = 1;
     }
     else if (command == "turn")
@@ -22,6 +27,11 @@ int main()
     {
         cout << "invalid command, type help to get a list of available commands" << endl;
     }
-    
+}
+
+int main()
+{
+    //int option;
+    //string command;
     
 }
