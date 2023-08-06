@@ -1,9 +1,9 @@
 # Data Structures project
 
 ## Group 4
-Juan Sebastian Camacho
-Bryan
-Daniela
+Juan Sebastian Camacho   
+Bryan    
+Daniela   
 
 ### Assignment 0
 

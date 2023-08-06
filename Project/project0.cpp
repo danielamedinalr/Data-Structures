@@ -35,7 +35,7 @@ void confighelp()
     }
 }
 
-void configoption(string command)
+void configoption(string command, bool &initstate)
 {
     //Componente 1: configuracion del juego
     
@@ -44,7 +44,15 @@ void configoption(string command)
     }
     else if (command == "initialize")
     {
-        
+        if(initstate == true)
+        {
+            cout << "game has already been initialized" << endl;
+        }
+        else if (initstate == false)
+        {
+            initstate = true;
+            cout << "game initialized succesfully" << endl;
+        }
     }
     else if (command == "turn")
     {
@@ -77,6 +85,6 @@ int main()
    string command;
 
    cin >> command;
-   configoption(command);
+   configoption(command, gameinit);
     
 }
