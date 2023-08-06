@@ -58,9 +58,10 @@ void printhelp(vector <vector <string> > &helpvecs, vector <string> &helpline)
                 if (helpvecs[q][0] == option)
                 {
                     cout << endl << helpvecs[q][0] << ": " << helpvecs[q][1] << endl << endl;
-                    break;
+                    return;
                 }
             }
+            cout << "command: " << option << " does not exist" << endl; 
         }
 }
 
@@ -68,18 +69,24 @@ void helpsearch(vector <string> &helpline)
 {
     string option;
     vector <vector <string> > confighelp;
-    confighelp.push_back({"help", "shows available commands and their descriptions, depending on the state of the program"});
-    confighelp.push_back({"initialize", "asks number of players, the name of each player, and asks which territories each player wants to occupy in their turn"});
-    confighelp.push_back({"turn", "tells the player available units to claim. Then asks which territory the player wants to assign them to, and in what numbers. Then asks attack configurations, from which territory, to which territory. Then rolls the dice and informs the units gained or lost to the player. Repeats the process until one of the territories runs out of units, or until the attacker decides to stop. Afterwards, the player is asked which surrounding territories should be fortified, as well as the units transported from one to the other."});
-    confighelp.push_back({"clear", "resets the screen of the terminal"});
-    confighelp.push_back({"exit", "ends the program"});
+    confighelp.push_back({"help", "Shows available commands and their descriptions, depending on the state of the program"});
+    confighelp.push_back({"initialize", "Asks number of players, the name of each player, and asks which territories each player wants to occupy in their turn"});
+    confighelp.push_back({"turn", "Tells the player available units to claim. Then asks which territory the player wants to assign them to, and in what numbers. Then asks attack configurations, from which territory, to which territory. Then rolls the dice and informs the units gained or lost to the player. Repeats the process until one of the territories runs out of units, or until the attacker decides to stop. Afterwards, the player is asked which surrounding territories should be fortified, as well as the units transported from one to the other."});
+    confighelp.push_back({"clear", "Resets the screen of the terminal"});
+    confighelp.push_back({"exit", "Ends the program"});
 
     vector <vector <string> > saveshelp;
-    saveshelp.push_back({"help", "shows available commands and their descriptions, depending on the state of the program"});
-    saveshelp.push_back({"save", "saves the state of the current game in an uncompressed text file"});
-    saveshelp.push_back({"save_compressed", "saves the state of the current game in a compressed binary file"});
-    saveshelp.push_back({"initialize", "initializes the game with the data from the specified file"});
-    saveshelp.push_back({"clear", "resets the screen of the terminal"});
+    saveshelp.push_back({"help", "Shows available commands and their descriptions, depending on the state of the program"});
+    saveshelp.push_back({"save", "Saves the state of the current game in an uncompressed text file"});
+    saveshelp.push_back({"save_compressed", "Saves the state of the current game in a compressed binary file"});
+    saveshelp.push_back({"initialize", "Initializes the game with the data from the specified file"});
+    saveshelp.push_back({"clear", "Resets the screen of the terminal"});
+
+    vector <vector <string> > strategyhelp;
+    strategyhelp.push_back({"help", "Shows available commands and their descriptions, depending on the state of the program"});
+    strategyhelp.push_back({"conquest_cost", "Calculates the cost and sequence of territories that must be conquered to control the territory specified. The attack starts at the territory controled by the current player that is closest to the specified territory"});
+    strategyhelp.push_back({"cheapest_conquest", "Calculates which territory would result in the least number of units lost. The cost is calculated for the current player and their territories"});
+    
 
     if (helpline.back() == "confighelp")
     {
@@ -89,7 +96,10 @@ void helpsearch(vector <string> &helpline)
     {
         printhelp(saveshelp, helpline);
     }
-    
+    else if (helpline.back() == "strategyhelp")
+    {
+        printhelp(strategyhelp, helpline);
+    }
     
     /*
     //range-based loops
@@ -117,10 +127,10 @@ void helpsearch(vector <string> &helpline)
 
 }
 
-void gameconfig(bool &initstate)
+void gameconfig(bool &initstate, bool &endgame)
 {
     //Componente 1: configuracion del juego
-    bool endgame = false, validplayer = false, playerturn = false, endturn = false;
+    bool validplayer = false, playerturn = false, endturn = false;
     vector <string> commands;
     
     do{
@@ -186,6 +196,7 @@ void gameconfig(bool &initstate)
 
 void gamesaves(bool &gameinit)
 {
+    //Componente 2
     bool savefine = false, readfine = false;
     vector <string> commands;
 
@@ -262,10 +273,66 @@ void gamesaves(bool &gameinit)
     } while (commands[0] != "exit");
 }
 
+void gamestrategy(bool &gameinit, bool &endgame)
+{
+    //Componente 3
+    vector <string> commands;
+
+    do
+    {
+        commands = readinputs();
+        
+        if(commands[0] == "help")
+        {
+            commands.push_back("strategyhelp");
+            helpsearch(commands);
+        }
+        else if (commands[0] == "conquest_cost")
+        {
+            if (gameinit == false)
+            {
+                cout << "game has not been initialized correctly" << endl;
+            }
+            else if (endgame == true)
+            {
+                cout << "game already has a winner" << endl;
+            }
+            else
+            {
+                cout << "to conquer territory "  << "x" << ", from territory "  << "y" << " through territories " << "z, e, d" << "player must use " << "10" << " army units" << endl;
+            }
+        }
+        else if (commands[0] == "cheapest_conquest")
+        {
+            if (gameinit == false)
+            {
+                cout << "game has not been initialized correctly" << endl;
+            }
+            else if (endgame == true)
+            {
+                cout << "game already has a winner" << endl;
+            }
+            else
+            {
+                cout << "the cheapest conquest is conquering territory x from territory y, going through territories z e d, using up 10 army units" << endl;
+            }
+        }
+    } while (commands[0] != "exit");
+    
+}
+
 int main()
 {
-   bool gameinit = false;
+   bool gameinit = false, endgame = false;
 
-   gameconfig(gameinit);
-    
+   cout << "configuration options: " << endl;
+   gameconfig(gameinit, endgame);
+
+   cout << "save options: " << endl;
+   gamesaves(gameinit);
+
+   cout << "strategy options: " << endl;
+   gamestrategy(gameinit, endgame);
+
+   return 0; 
 }
