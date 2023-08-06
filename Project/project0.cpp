@@ -8,14 +8,18 @@ using namespace std;
 
 vector <string> readinputs()
 {
-    string consoleinput, line, option;
+    string consoleinput, line;
     
     vector <string> commands;
 
     //sometimes getline misbehaves because of /n
     //so sometimes we have to use cin.ignore()
     
-    getline(cin, consoleinput);
+    do
+    {
+        getline(cin, consoleinput);
+    } while (consoleinput.length() == 0);
+    
     stringstream inputs(consoleinput);
 
     while(inputs >> line)
@@ -34,7 +38,33 @@ vector <string> readinputs()
     return commands;
 }
 
-void confighelp(vector <string> &helpline)
+void printhelp(vector <vector <string> > &helpvecs, vector <string> &helpline)
+{
+    string option;
+    if (helpline.size() == 1)
+        {
+            cout << endl << "available commands: " << endl << endl;
+            for(int q = 0; q < helpvecs.size(); q++)
+            {
+                cout << helpvecs[q][0] << endl;
+            }
+            cout << endl << "type help -command to get a description of each command" << endl << endl;
+        }
+        else
+        {
+            option = helpline[1].substr(1);
+            for (int q = 0; q < helpvecs.size(); q++)
+            {
+                if (helpvecs[q][0] == option)
+                {
+                    cout << endl << helpvecs[q][0] << ": " << helpvecs[q][1] << endl << endl;
+                    break;
+                }
+            }
+        }
+}
+
+void helpsearch(vector <string> &helpline)
 {
     string option;
     vector <vector <string> > confighelp;
@@ -44,27 +74,22 @@ void confighelp(vector <string> &helpline)
     confighelp.push_back({"clear", "resets the screen of the terminal"});
     confighelp.push_back({"exit", "ends the program"});
 
-    if (helpline.size() == 1)
+    vector <vector <string> > saveshelp;
+    saveshelp.push_back({"help", "shows available commands and their descriptions, depending on the state of the program"});
+    saveshelp.push_back({"save", "saves the state of the current game in an uncompressed text file"});
+    saveshelp.push_back({"save_compressed", "saves the state of the current game in a compressed binary file"});
+    saveshelp.push_back({"initialize", "initializes the game with the data from the specified file"});
+    saveshelp.push_back({"clear", "resets the screen of the terminal"});
+
+    if (helpline.back() == "confighelp")
     {
-        cout << endl << "available commands: " << endl << endl;
-        for(int q = 0; q < confighelp.size(); q++)
-        {
-            cout << confighelp[q][0] << endl;
-        }
-        cout << endl << "type help -command to get a description of each command" << endl << endl;
+        printhelp(confighelp, helpline);
     }
-    else
+    else if (helpline.back() == "saveshelp")
     {
-        option = helpline[1].substr(1);
-        for (int q = 0; q < confighelp.size(); q++)
-        {
-            if (confighelp[q][0] == option)
-            {
-                cout << endl << confighelp[q][0] << ": " << confighelp[q][1] << endl << endl;
-                break;
-            }
-        }
+        printhelp(saveshelp, helpline);
     }
+    
     
     /*
     //range-based loops
@@ -102,7 +127,8 @@ void gameconfig(bool &initstate)
         commands = readinputs();
         
         if (commands[0] == "help"){
-            confighelp(commands);
+            commands.push_back("confighelp");
+            helpsearch(commands);
         }
         else if (commands[0] == "initialize")
         {
@@ -169,7 +195,8 @@ void gamesaves(bool &gameinit)
 
         if (commands[0] == "help")
         {
-            
+            commands.push_back("saveshelp");
+            helpsearch(commands);
         }
         else if (commands[0] == "save")
         {
@@ -205,7 +232,7 @@ void gamesaves(bool &gameinit)
         {
             if(readfine == false)
             {
-                if(commands.size() == 1)
+                if(commands.size() <= 1)
                 {
                     cout << "no file name specified" << endl;
                 }
